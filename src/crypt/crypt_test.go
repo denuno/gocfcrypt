@@ -16,8 +16,11 @@ func TestEncrypt(t *testing.T){
 	encResult, err := Encrypt(data, secret)
 	fmt.Println("encResult:", key)
 	fmt.Println("encResult:", encResult)
-	fmt.Println("enc err", err)
+	if err != nil {
+		fmt.Println("enc err", err)
+	}
 
+	fmt.Println("writing ./goencrypted.txt")
 	writeErr := ioutil.WriteFile("./goencrypted.txt", []byte(encResult), 0644)
 	if writeErr != nil {
 		return
@@ -38,6 +41,7 @@ func TestDncrypt(t *testing.T){
 	result, err := Decrypt(string(data), secret)
 	fmt.Println("decrypted result", result)
 	fmt.Println("decryption err", err)
+	fmt.Println("")
 
 }
 
@@ -54,5 +58,11 @@ func TestEDncrypt(t *testing.T){
 	result, err := Decrypt(string(data), secret)
 	fmt.Println("decrypted result", result)
 	fmt.Println("decryption err", err)
+
+	dataGo, err := ioutil.ReadFile("./goencrypted.txt")
+	resultGo, err := Decrypt(string(dataGo), secret)
+	fmt.Println("decrypted result", resultGo)
+	fmt.Println("decryption err", err)
+	fmt.Println("")
 
 }

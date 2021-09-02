@@ -1,54 +1,67 @@
 <html>
 <cfscript>
-    plaintext = './plaintext.txt';
-    keyfile = './keyfile';
-    encrypted = './encrypted.txt';
-    goencrypted = './goencrypted.txt';
+    plaintextFile = './plaintext.txt';
+    keyFile = './keyfile';
+    encryptedFile = './encrypted.txt';
+    goEncryptedFile = './goencrypted.txt';
+    goMessage = "";
+    encryptedMessage = "";
+    decryptedMessage = "";
+    decryptedGoMessage = "";
 
-    if(!fileExists(plaintext)){
-        fileWrite(plaintext, "hello world");
+    if(!fileExists(plaintextFile)){
+        fileWrite(plaintextFile, "hello world");
     }
 
-    if(!fileExists(keyfile)){
-        fileWrite(keyfile, generateSecretKey('AES'));
+    if(!fileExists(keyFile)){
+        fileWrite(keyFile, generateSecretKey('AES'));
         writeoutput("generating");
     }
 
-    if(!fileExists(encrypted)){
-        encMsg = encrypt( msg, key, 'AES/CBC/PKCS5Padding', 'HEX');
-        filewrite("./encrypted.txt", encmsg);
+    key = fileRead(keyFile);
+    msg = fileRead(plaintextFile);
+
+    if(!fileExists(encryptedFile)){
+        encryptedMessage = encrypt( msg, key, 'AES/CBC/PKCS5Padding', 'HEX');
+        filewrite(encryptedFile, encryptedMessage);
         writeoutput("enc");
     } else {
         writeoutput("reading go");
-        encMsg = fileread(encrypted);
+        encryptedMessage = fileread(encryptedFile);
     }
 
-    msg = fileRead(plaintext);
-    key = fileRead(keyfile);
 
     if(!isNull(form.text)){
-        decMsg = decrypt( form.text, key, 'AES/CBC/PKCS5Padding', 'HEX');
-        writeOutput(decMsg & "<br/>");
+        decryptedMessage = decrypt( form.text, key, 'AES/CBC/PKCS5Padding', 'HEX');
+        writeOutput(decryptedMessage & "<br/>");
     } else {
-        decMsg = decrypt( trim(encMsg), key, 'AES/CBC/PKCS5Padding', 'HEX');
+        decryptedMessage = decrypt( trim(encryptedMessage), key, 'AES/CBC/PKCS5Padding', 'HEX');
     }
 
-    if(fileExists(goencrypted)){
+    if(fileExists(goEncryptedFile)){
+        goMessage = fileread(goEncryptedFile);
         try{
-            decGoMsg = decrypt( trim(fileread(goencrypted)), key, 'AES/CBC/PKCS5Padding', 'HEX');
+            decryptedGoMessage = decrypt( trim(goMessage), key, 'AES/CBC/PKCS5Padding', 'HEX');
         } catch(any e){
-            decGoMsg = e.message;
+            decryptedGoMessage = e.message;
         }
     }
 //    decMsg = decrypt( fileRead('./plaintext.aes'), key, 'AES/CBC/PKCS5Padding', 'HEX');
 
 </cfscript>
+<cfoutput>
 <form action="?" method="post">
     <a href="?">reset</a>
-    <pre>Decrypted:<cfoutput>#decMsg#</cfoutput></pre>
-    <pre>GoCrypted:<cfoutput>#decGoMsg#</cfoutput></pre>
-    <input type="text" name="text" value="<cfoutput>#encMsg#</cfoutput>"/>
+    <pre>
+        Message:#encryptedMessage#
+        Decrypted:#decryptedMessage#
+
+        GoMessage:#goMessage#
+        GoDecryptedMessage:#decryptedGoMessage#
+    </pre>
+    <input type="text" name="text" value="#encryptedMessage#"/>
     <input type="submit">
 </form>
+</cfoutput>
 
 </html>
