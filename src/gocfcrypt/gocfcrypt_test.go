@@ -1,4 +1,4 @@
-package crypt
+package gocfcrypt
 
 import (
 	"encoding/base64"
