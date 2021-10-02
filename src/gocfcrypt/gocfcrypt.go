@@ -5,10 +5,26 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"encoding/hex"
 	"io"
+	"io/ioutil"
+	"log"
 	"strings"
 )
+
+func Base64Decode(key []byte) []byte {
+	decoded, _ := base64.StdEncoding.DecodeString(strings.TrimSpace(string(key)))
+	return decoded
+}
+
+func ReadFile(filePath string) []byte {
+	body, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
+	return body
+}
 
 func PKCS7Padding(ciphertext []byte, blockSize int) []byte {
 	padding := blockSize - len(ciphertext)%blockSize

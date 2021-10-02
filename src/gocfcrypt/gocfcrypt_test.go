@@ -1,17 +1,16 @@
 package gocfcrypt
 
 import (
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"strings"
+	"log"
 	"testing"
 )
 
 func TestEncrypt(t *testing.T){
 	fmt.Println("Test Encrypt ***")
-	key, err := ioutil.ReadFile("./keyfile")
-	secret, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(key)))
+	key := ReadFile("./keyfile")
+	secret := Base64Decode(key)
 	data := []byte("this is a test from Go")
 	encResult, err := Encrypt(data, secret)
 	fmt.Println("encResult:", key)
@@ -32,37 +31,38 @@ func TestEncrypt(t *testing.T){
 	fmt.Println("")
 }
 
-func TestDncrypt(t *testing.T){
+func TestDecrypt(t *testing.T){
 	fmt.Println("Test Decrypt ***")
-	key, err := ioutil.ReadFile("./keyfile")
-	secret, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(key)))
+	key := ReadFile("./keyfile")
+	secret := Base64Decode(key)
 
-	data, err := ioutil.ReadFile("./encrypted.txt")
+	data := ReadFile("./encrypted.txt")
 	result, err := Decrypt(string(data), secret)
 	fmt.Println("decrypted result", result)
 	fmt.Println("decryption err", err)
 	fmt.Println("")
-
 }
 
-func TestEDncrypt(t *testing.T){
+func TestAgain(t *testing.T){
 	fmt.Println("Test EN Decrypt ***")
-	key, err := ioutil.ReadFile("./keyfile")
-	secret, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(key)))
+	key := ReadFile("./keyfile")
+	secret := Base64Decode(key)
 
-	plaintext, err := ioutil.ReadFile("./plaintext.txt")
+	plaintext  := ReadFile("./plaintext.txt")
 	encResult, err := Encrypt(plaintext, secret)
+	if err != nil {
+		log.Fatalf("unable to read file: %v", err)
+	}
 	fmt.Println("encResult", encResult)
 
-	data, err := ioutil.ReadFile("./encrypted.txt")
+	data := ReadFile("./encrypted.txt")
 	result, err := Decrypt(string(data), secret)
 	fmt.Println("decrypted result", result)
 	fmt.Println("decryption err", err)
 
-	dataGo, err := ioutil.ReadFile("./goencrypted.txt")
+	dataGo := ReadFile("./goencrypted.txt")
 	resultGo, err := Decrypt(string(dataGo), secret)
 	fmt.Println("decrypted result", resultGo)
 	fmt.Println("decryption err", err)
 	fmt.Println("")
-
 }
